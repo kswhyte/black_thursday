@@ -1,25 +1,18 @@
 class Invoice
-  attr_reader :id
+  attr_reader :id,
+              :customer_id,
+              :merchant_id,
+              :status,
+              :created_at,
+              :updated_at
 
   def initialize(invoice, invoice_repository_parent = nil)
     # @invoice_repository_parent = invoice_repository_parent
     @id                        = invoice[:id].to_i
-
+    @customer_id               = invoice[:customer_id].to_i
+    @merchant_id               = invoice[:merchant_id].to_i
+    @status                    = invoice[:status]
+    @created_at                = Time.parse(invoice[:created_at])
+    @updated_at                = Time.parse(invoice[:created_at])
   end
-
-  end
-
-
-
-
-# id - returns the integer id
-#
-# customer_id - returns the customer id
-#
-# merchant_id - returns the merchant id
-#
-# status - returns the status
-#
-# created_at - returns a Time instance for the date the item was first created
-#
-# updated_at - returns a Time instance for the date the item was last modified
+end

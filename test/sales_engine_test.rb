@@ -89,11 +89,10 @@ class SalesEngineTest < Minitest::Test
   end
 
 #  For Invoice CONNECTION
-#   se = SalesEngine.from_csv({
-#   :items => "./data/items.csv",
-#   :merchants => "./data/merchants.csv",
-#   :invoices => "./data/invoices.csv"
-# })
+
+# invoice = se.invoices.find_by_id(6)
+# => <invoice>
+
 # merchant = se.merchants.find_by_id(10)
 # merchant.invoices
 # # => [<invoice>, <invoice>, <invoice>]

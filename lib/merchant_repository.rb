@@ -11,14 +11,8 @@ class MerchantRepository
     populate(merchants_data)
   end
 
-  def format_merchant_info(merchant)
-    { :id   => merchant[:id],
-      :name => merchant[:name] }
-  end
-
   def make_merchant(merchant_data)
-    merchant_formatted = format_merchant_info(merchant_data)
-    @merchants[merchant_data[:id].to_i] = Merchant.new(merchant_formatted, self)
+    @merchants[merchant_data[:id].to_i] = Merchant.new(merchant_data, self)
   end
 
   def populate(merchants_data)
