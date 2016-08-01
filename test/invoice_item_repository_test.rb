@@ -36,8 +36,19 @@ class InvoiceItemRepositoryTest < Minitest::Test
     assert_equal nil,               iir.find_by_id(201)
   end
 
-  # def test_it_finds_all_invoice_items_by_item_id
-  #   iir = InvoiceItemRepository.new("./test/fixtures/200invitms.csv")
-  #
-  # end
+  def test_it_finds_all_invoice_items_by_item_id
+    iir = InvoiceItemRepository.new("./test/fixtures/200invitms.csv")
+
+    assert_equal 2,  iir.find_all_by_item_id(263406625).count
+    assert_equal 3,  iir.find_all_by_item_id(263535488).count
+    assert_equal [], iir.find_all_by_item_id(8675309)
+  end
+
+  def test_it_finds_all_invoice_items_by_invoice_id
+    iir = InvoiceItemRepository.new("./test/fixtures/200invitms.csv")
+
+    assert_equal 8, iir.find_all_by_invoice_id(1).count
+    assert_equal 5, iir.find_all_by_invoice_id(40).count
+    assert_equal 0, iir.find_all_by_invoice_id(99).count
+  end
 end
