@@ -23,8 +23,8 @@ class InvoiceItemRepositoryTest < Minitest::Test
   def test_it_returns_a_list_of_all_invoice_items
     iir = InvoiceItemRepository.new("./test/fixtures/200invitms.csv")
 
-    assert_equal Array,      iir.all.class
-    assert_equal 200,         iir.all.count
+    assert_equal Array,             iir.all.class
+    assert_equal 200,               iir.all.count
     assert_instance_of InvoiceItem, iir.all.sample
   end
 

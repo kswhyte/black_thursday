@@ -7,8 +7,10 @@ class InvoiceItemRepository
   def initialize(load_path, sales_engine_parent = nil)
     @sales_engine_parent = sales_engine_parent
     @invoice_items = {}
-    invoice_items_data = FileExtractor.extract_data(load_path)
-    populate(invoice_items_data)
+    if load_path.class == String && File.exist?(load_path)
+      invoice_items_data = FileExtractor.extract_data(load_path)
+      populate(invoice_items_data)
+    end
   end
 
   def make_invoice_item(invoice_item_data)

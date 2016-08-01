@@ -1,6 +1,3 @@
-require_relative '../lib/item_repository'
-
-
 class SalesAnalyst
   attr_reader :sales_engine
 
@@ -8,12 +5,11 @@ class SalesAnalyst
     @sales_engine = sales_engine
     @all_merchants = @sales_engine.merchants.merchants
     @all_items = @sales_engine.items.items
+    @all_invoices = @sales_engine.invoices.invoices
   end
 
   def average_items_per_merchant
-    total_items = sales_engine.items.all.count
-    total_merchants = sales_engine.merchants.all.count
-    (total_items.to_f / total_merchants).round(2)
+    (@all_items.count.to_f / @all_merchants.count).round(2)
   end
 
   def items_per_merchant
@@ -80,5 +76,67 @@ class SalesAnalyst
     @all_items.values.find_all do |item|
       item.unit_price > cov
     end
+  end
+
+  def average_invoices_per_merchant
+    (@all_invoices.count.to_f / @all_merchants.count).round(2)
+  end
+
+  def invoices_per_merchant
+    @all_merchants.keys.map do |merchant_id|
+      sales_engine.invoices.find_all_by_merchant_id(merchant_id).count
+    end
+  end
+
+  def average_invoices_per_merchant_standard_deviation
+    sample_standard_deviation(invoices_per_merchant, average_invoices_per_merchant)
+  end
+
+  def top_merchants_by_invoice_count
+    cov = coefficient_of_variation(average_invoices_per_merchant,
+      average_invoices_per_merchant_standard_deviation, 2)
+    @all_merchants.values.find_all do |merchant|
+      sales_engine.invoices.find_all_by_merchant_id(merchant.id).count > cov
+    end
+  end
+
+  def bottom_merchants_by_invoice_count
+    cov = coefficient_of_variation(average_invoices_per_merchant,
+      average_invoices_per_merchant_standard_deviation, -2)
+    @all_merchants.values.find_all do |merchant|
+      sales_engine.invoices.find_all_by_merchant_id(merchant.id).count < cov
+    end
+  end
+
+  def invoices_per_day
+    @all_invoices.values.each_with_object(Hash.new(0)) do |invoice, per_day|
+      per_day[invoice.created_at.strftime('%A')] += 1
+    end
+  end
+
+  def average_invoices_per_day
+    (@all_invoices.count.to_f / 7 ).round(2)
+  end
+
+  def invoices_per_day_standard_deviation
+    sample_standard_deviation(invoices_per_day.values, average_invoices_per_day)
+  end
+
+  def top_days_by_invoice_count
+    cov = coefficient_of_variation(average_invoices_per_day,
+      invoices_per_day_standard_deviation, 1)
+    invoices_per_day.select do |day, quantity|
+      quantity > cov
+    end.keys
+  end
+
+  def invoices_by_status
+    @all_invoices.values.each_with_object(Hash.new(0)) do |invoice, statuses|
+      statuses[invoice.status] += 1
+    end
+  end
+
+  def invoice_status(status)
+    ( 100 * invoices_by_status[status] / @all_invoices.count.to_f ).round(2)
   end
 end

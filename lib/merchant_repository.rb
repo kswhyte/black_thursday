@@ -7,18 +7,14 @@ class MerchantRepository
   def initialize(load_path, sales_engine_parent = nil)
     @sales_engine_parent = sales_engine_parent
     @merchants = {}
-    merchants_data = FileExtractor.extract_data(load_path)
-    populate(merchants_data)
-  end
-
-  def format_merchant_info(merchant)
-    { :id   => merchant[:id],
-      :name => merchant[:name] }
+    if load_path.class == String && File.exist?(load_path)
+      merchants_data = FileExtractor.extract_data(load_path)
+      populate(merchants_data)
+    end
   end
 
   def make_merchant(merchant_data)
-    merchant_formatted = format_merchant_info(merchant_data)
-    @merchants[merchant_data[:id].to_i] = Merchant.new(merchant_formatted, self)
+    @merchants[merchant_data[:id].to_i] = Merchant.new(merchant_data, self)
   end
 
   def populate(merchants_data)
@@ -49,6 +45,10 @@ class MerchantRepository
 
   def find_items_by_merchant_id(merchant_id)
     @sales_engine_parent.find_items_by_merchant_id(merchant_id)
+  end
+
+  def find_invoices_by_merchant_id(merchant_id)
+    @sales_engine_parent.find_invoices_by_merchant_id(merchant_id)
   end
 
   def inspect

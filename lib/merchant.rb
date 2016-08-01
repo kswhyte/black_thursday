@@ -11,6 +11,10 @@ class Merchant
   def items
     @merchant_repository_parent.find_items_by_merchant_id(id)
   end
+
+  def invoices
+    @merchant_repository_parent.find_invoices_by_merchant_id(id)
+  end
 end
 
 #fixtures directory of sample data

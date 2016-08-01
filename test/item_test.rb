@@ -9,25 +9,25 @@ class ItemTest < Minitest::Test
                   :unit_price  => "1300",
                   :created_at  => "2016-01-11 11:51:37 UTC",
                   :updated_at  => "1993-09-29 11:56:40 UTC",
-                  :merchant_id => "12334185" }),
+                  :merchant_id => "12334185"  }),
 
-    Item.new({    :id          => "263396279",
+      Item.new({  :id          => "263396279",
                   :name        => "Eule - Topflappen, handgehäkelt, Paar",
                   :description =>
                   "Handgerfertigete Topflappen in Form einer Eule. Die Topflappen wurden aus Wolle gehäkelt. Als Augen wurden Knöpfe verwendet.\n\nDer Verkauf erfolgt paarweise.\n\nHandmade in Germany\n\nMasse: Länge 22,5cm; Breite (breiteste Stelle) 17 cm",
                   :unit_price  => "1490",
                   :created_at  => "2016-01-11 10:06:10 UTC",
                   :updated_at  => "1995-03-08 17:49:21 UTC",
-                  :merchant_id => "12334213" }),
+                  :merchant_id => "12334213"  }),
 
-    Item.new({    :id          => "263397059",
+      Item.new({  :id          => "263397059",
                   :name        => "Etre ailleurs",
                   :description =>
                   "Acrylique sur carton entoilé exécutée en 2013\nFormat : 27 x 41 cm\nCarton entoilé - non encadré\nArtiste : Flavien Couche - Artiste côté Akoun\n\nTABLEAU VENDU AVEC FACTURE ET CERTIFICAT D&#39;AUTHETICITE\n\nwww.flavien-couche.com",
                   :unit_price  => "13000",
                   :created_at  => "2016-01-11 11:30:35 UTC",
                   :updated_at  => "2007-07-24 05:54:52 UTC",
-                  :merchant_id => "12334195" }) ]
+                  :merchant_id => "12334195"  }) ]
   end
 
   def test_it_creates_a_new_item

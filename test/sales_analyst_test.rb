@@ -5,7 +5,8 @@ require './lib/sales_analyst'
 class SalesAnalystTest < Minitest::Test
   def sales_analyst_test_setup
     se = SalesEngine.from_csv({ :items     => "./data/items.csv",
-                                :merchants => "./data/merchants.csv" })
+                                :merchants => "./data/merchants.csv",
+                                :invoices  => "./data/invoices.csv" })
     SalesAnalyst.new(se)
   end
 
@@ -70,11 +71,81 @@ class SalesAnalystTest < Minitest::Test
     assert_equal 2900.99, sa.item_price_standard_deviation
   end
 
-  def test_it_returns_highest_priced_items
+  def test_it_calculates_golden_items
     sa = sales_analyst_test_setup
 
     assert_equal 5, sa.golden_items.count
     assert_instance_of Item, sa.golden_items.first
     ##is there a more valid way to test this?
+  end
+
+  def test_it_calculates_average_invoices_per_merchant
+    sa = sales_analyst_test_setup
+
+    assert_equal 10.49, sa.average_invoices_per_merchant
+  end
+
+  def test_it_calculates_invoices_per_merchant
+    se_sample = SalesEngine.from_csv({
+      :items     => "./data/items.csv",
+      :merchants => "./test/fixtures/merchants_sample.csv",
+      :invoices  => "./data/invoices.csv" })
+    sa_sample = SalesAnalyst.new(se_sample)
+
+    assert_equal [10, 7, 12, 11, 10, 10, 13, 18, 10, 14], sa_sample.invoices_per_merchant
+  end
+
+  def test_it_calculates_average_invoices_per_merchant_standard_deviation
+    sa = sales_analyst_test_setup
+
+    assert_equal 3.29, sa.average_invoices_per_merchant_standard_deviation
+  end
+
+  def test_it_calculates_top_performing_merchants
+    sa = sales_analyst_test_setup
+
+    assert_equal 12,              sa.top_merchants_by_invoice_count.count
+    assert_instance_of Merchant,  sa.top_merchants_by_invoice_count.first
+  end
+
+  def test_it_calculates_bottom_performing_merchants
+    sa = sales_analyst_test_setup
+
+    assert_equal 4,               sa.bottom_merchants_by_invoice_count.count
+    assert_instance_of Merchant,  sa.bottom_merchants_by_invoice_count.first
+  end
+
+  def test_it_calculates_invoices_per_day
+    sa = sales_analyst_test_setup
+    invoices = {"Saturday"=>729, "Friday"=>701, "Wednesday"=>741, "Monday"=>696,
+      "Sunday"=>708, "Tuesday"=>692, "Thursday"=>718}
+
+    assert_equal invoices, sa.invoices_per_day
+  end
+
+  def test_it_calculates_days_of_the_week_with_the_most_sales
+    sa = sales_analyst_test_setup
+
+    assert_equal 712.14, sa.average_invoices_per_day
+  end
+
+  def test_it_calculates_invoices_per_day_standard_deviation
+    sa = sales_analyst_test_setup
+
+    assert_equal 18.07, sa.invoices_per_day_standard_deviation
+  end
+
+  def test_it_calculates_top_days_by_invoice_count
+    sa = sales_analyst_test_setup
+
+    assert_equal ["Wednesday"], sa.top_days_by_invoice_count
+  end
+
+  def test_it_calculates_percentage_of_invoices_not_shipped
+    sa = sales_analyst_test_setup
+
+    assert_equal 29.55, sa.invoice_status(:pending) # => 5.25
+    assert_equal 56.95, sa.invoice_status(:shipped) # => 93.75
+    assert_equal 13.50, sa.invoice_status(:returned) # => 1.00
   end
 end
