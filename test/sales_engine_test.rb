@@ -39,7 +39,38 @@ class SalesEngineTest < Minitest::Test
 
     assert_instance_of Item,                item
     assert_equal "Glitter scrabble frames", item.name
-    assert_equal 263395617,               item.id
+    assert_equal 263395617,                 item.id
+  end
+
+  def test_it_returns_an_item_based_on_merchant_id
+    se = SalesEngine.from_csv({ :items     => "./data/items.csv",
+                                :merchants => "./data/merchants.csv" })
+
+    merchant = se.merchants.find_by_id(12334115)
+    name_of_item = merchant.items.map do |item|
+      item.name
+    end
+
+    item_name = ["French bulldog cushion cover 45x45cm *cover only, pad NOT included*"]
+    assert_instance_of Item, merchant.items.first
+    assert_equal item_name,  name_of_item
+  end
+
+  def test_it_returns_items_based_on_another_merchant_id
+    se = SalesEngine.from_csv({ :items     => "./data/items.csv",
+                                :merchants => "./data/merchants.csv" })
+
+    merchant = se.merchants.find_by_id(12334132)
+    names_of_items = merchant.items.map do |item|
+      item.name
+    end
+
+    item_names = ["sautoir boheme chic perle de gemme  montee sur chainette argentée",
+      "sautoir ethique couleur naturel printemps été",
+      "sautoir boheme chic  en perle et pierre"]
+
+    assert_instance_of Item, merchant.items.first
+    assert_equal item_names, names_of_items
   end
 
   def test_it_returns_a_merchant_based_on_item_id
@@ -59,54 +90,20 @@ class SalesEngineTest < Minitest::Test
     assert_equal "Madewithgitterxx", item.merchant.name
   end
 
-  def test_it_returns_single_item_based_on_merchant_id
-    se = SalesEngine.from_csv({ :items     => "./data/items.csv",
-                                :merchants => "./data/merchants.csv" })
-
-    merchant = se.merchants.find_by_id(12334115)
-    list_of_items = merchant.items
-    names_of_items = list_of_items.map do |item|
-      item.name
-    end
-
-    names = ["French bulldog cushion cover 45x45cm *cover only, pad NOT included*"]
-    assert_instance_of Item, list_of_items.first
-    assert_equal names,      names_of_items
-  end
-
-  def test_it_returns_multiple_items_based_on_another_merchant_id
-    se = SalesEngine.from_csv({ :items     => "./data/items.csv",
-                                :merchants => "./data/merchants.csv" })
-
-    merchant = se.merchants.find_by_id(12334132)
-    list_of_items = merchant.items
-    names_of_items = list_of_items.map do |item|
-      item.name
-    end
-
-    names = ["sautoir boheme chic perle de gemme  montee sur chainette argentée", "sautoir ethique couleur naturel printemps été", "sautoir boheme chic  en perle et pierre"]
-
-    assert_instance_of Item, list_of_items.first
-    assert_equal names,      names_of_items
-  end
-
-  def test_it_returns_multiple_invoices_based_on_merchant_id
+  def test_it_returns_invoices_based_on_merchant_id
     se = SalesEngine.from_csv({ :items     => "./data/items.csv",
                                 :merchants => "./data/merchants.csv",
                                 :invoices  => "./data/invoices.csv" })
 
     merchant = se.merchants.find_by_id(12334132)
-    list_of_invoices = merchant.invoices
-    invoice_ids = list_of_invoices.map do |invoice|
+    invoice_ids = merchant.invoices.map do |invoice|
       invoice.id
     end
 
     ids = [391, 580, 1331, 1466, 2529, 3395, 3599, 3758, 3929, 4442]
 
-    names = ["pending", "returned"]
-
-    assert_instance_of Invoice, list_of_invoices.first
-    assert_equal ids,   invoice_ids
+    assert_instance_of Invoice, merchant.invoices.first
+    assert_equal ids, invoice_ids
   end
 
   def test_it_returns_a_merchant_based_on_invoice_id
@@ -115,16 +112,132 @@ class SalesEngineTest < Minitest::Test
                                 :invoices  => "./data/invoices.csv" })
 
     invoice = se.invoices.find_by_id(26)
-    assert_instance_of Merchant,  invoice.merchant
+    assert_instance_of Merchant,        invoice.merchant
     assert_equal "NaturePhotography23", invoice.merchant.name
 
     invoice = se.invoices.find_by_id(69)
-    assert_instance_of Merchant,      invoice.merchant
+    assert_instance_of Merchant,  invoice.merchant
     assert_equal "DashaandSasha", invoice.merchant.name
 
     invoice = se.invoices.find_by_id(617)
-    assert_instance_of Merchant,     invoice.merchant
+    assert_instance_of Merchant,      invoice.merchant
     assert_equal "SmellyHippieSoaps", invoice.merchant.name
   end
 
+  def test_it_returns_items_based_on_invoice_id
+    se = SalesEngine.from_csv({ :items         => "./data/items.csv",
+                                :merchants     => "./data/merchants.csv",
+                                :invoices      => "./data/invoices.csv",
+                                :invoice_items => "./data/invoice_items.csv",
+                                :transactions  => "./data/transactions.csv",
+                                :customers     => "./data/customers.csv" })
+
+    invoice = se.invoices.find_by_id(81)
+    names_of_items = invoice.items.map do |item|
+      item.name
+    end
+
+    assert_instance_of Item,                    invoice.items.first
+    assert_equal ["Wooden Shelf", "The Baron"], names_of_items
+  end
+
+  def test_it_returns_transactions_based_on_invoice_id
+    se = SalesEngine.from_csv({ :items         => "./data/items.csv",
+                                :merchants     => "./data/merchants.csv",
+                                :invoices      => "./data/invoices.csv",
+                                :invoice_items => "./data/invoice_items.csv",
+                                :transactions  => "./data/transactions.csv",
+                                :customers     => "./data/customers.csv" })
+
+    invoice = se.invoices.find_by_id(46)
+    transaction_ids = invoice.transactions.map do |transaction|
+      transaction.id
+    end
+
+    assert_instance_of Transaction, invoice.transactions.first
+    assert_equal [2, 1370],         transaction_ids
+  end
+
+  def test_it_returns_items_based_on_invoice_id
+    se = SalesEngine.from_csv({ :items         => "./data/items.csv",
+                                :merchants     => "./data/merchants.csv",
+                                :invoices      => "./data/invoices.csv",
+                                :invoice_items => "./data/invoice_items.csv",
+                                :transactions  => "./data/transactions.csv",
+                                :customers     => "./data/customers.csv" })
+
+    invoice = se.invoices.find_by_id(81)
+    names_of_items = invoice.items.map do |item|
+      item.name
+    end
+
+    assert_instance_of Item,                    invoice.items.first
+    assert_equal ["Wooden Shelf", "The Baron"], names_of_items
+  end
+
+  def test_it_returns_a_customer_based_on_invoice_id
+    se = SalesEngine.from_csv({ :items         => "./data/items.csv",
+                                :merchants     => "./data/merchants.csv",
+                                :invoices      => "./data/invoices.csv",
+                                :invoice_items => "./data/invoice_items.csv",
+                                :transactions  => "./data/transactions.csv",
+                                :customers     => "./data/customers.csv" })
+
+    invoice = se.invoices.find_by_id(81)
+
+    assert_instance_of Customer, invoice.customer
+    assert_equal "Hoppe",        invoice.customer.last_name
+  end
+
+  def test_it_returns_an_invoice_based_on_transaction_id
+    se = SalesEngine.from_csv({ :items         => "./data/items.csv",
+                                :merchants     => "./data/merchants.csv",
+                                :invoices      => "./data/invoices.csv",
+                                :invoice_items => "./data/invoice_items.csv",
+                                :transactions  => "./data/transactions.csv",
+                                :customers     => "./data/customers.csv" })
+
+    transaction = se.transactions.find_by_id(40)
+
+    assert_instance_of Invoice, transaction.invoice
+    assert_equal 12335150,      transaction.invoice.merchant_id
+  end
+
+  def test_it_returns_customers_based_on_merchant_id
+    se = SalesEngine.from_csv({ :items         => "./data/items.csv",
+                                :merchants     => "./data/merchants.csv",
+                                :invoices      => "./data/invoices.csv",
+                                :invoice_items => "./data/invoice_items.csv",
+                                :transactions  => "./data/transactions.csv",
+                                :customers     => "./data/customers.csv" })
+
+    merchant = se.merchants.find_by_id(12334194)
+    last_names_of_customers = merchant.customers.map do |customer|
+      customer.last_name
+    end
+    customer_last_names = ["Gulgowski", "Cormier", "Hackett", "Borer", "Nolan",
+      "Morar", "Cormier", "Spinka", "Cremin", "Quitzon", "Brown", "Flatley"]
+
+    assert_instance_of Customer,      merchant.customers.first
+    assert_equal customer_last_names, last_names_of_customers
+  end
+
+  def test_it_returns_merchants_based_on_customer_id
+    se = SalesEngine.from_csv({ :items         => "./data/items.csv",
+                                :merchants     => "./data/merchants.csv",
+                                :invoices      => "./data/invoices.csv",
+                                :invoice_items => "./data/invoice_items.csv",
+                                :transactions  => "./data/transactions.csv",
+                                :customers     => "./data/customers.csv" })
+
+    customer = se.customers.find_by_id(30)
+    names_of_merchants = customer.merchants.map do |customer|
+      customer.name
+    end
+    merchant_names = ["SweetheartDarling", "TiffsOscPandora", "VectorCoast",
+      "wholesalergemstones", "thepurplepenshop"]
+
+    assert_instance_of Merchant,  customer.merchants.first
+    assert_equal merchant_names,  names_of_merchants
+  end
 end

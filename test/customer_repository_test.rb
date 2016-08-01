@@ -15,6 +15,17 @@ class CustomerRepositoryTest < Minitest::Test
     assert_equal 1000, cr.customers.count
   end
 
+  def test_it_does_not_error_on_bad_input
+    cr = CustomerRepository.new("./bogus/file/path.csv")
+    assert_equal Hash.new, cr.customers
+
+    cr = CustomerRepository.new(true)
+    assert_equal Hash.new, cr.customers
+
+    cr = CustomerRepository.new(nil)
+    assert_equal Hash.new, cr.customers
+  end
+
   def test_it_returns_a_customer_from_repository
     cr = CustomerRepository.new("./data/customers.csv")
 

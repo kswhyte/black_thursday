@@ -1,5 +1,5 @@
 require_relative '../lib/transaction'
-require './lib/file_extractor'
+require_relative '../lib/file_extractor'
 
 class TransactionRepository
   attr_reader :transactions
@@ -41,5 +41,13 @@ class TransactionRepository
     transactions.values.find_all do |transaction|
       transaction.result == result
     end
+  end
+
+  def find_invoice_by_transaction_id(invoice_id)
+    @sales_engine_parent.find_invoice_by_transaction_id(invoice_id)
+  end
+
+  def inspect
+    # "#<#{self.class} #{@merchants.size} rows>"
   end
 end

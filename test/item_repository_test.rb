@@ -15,6 +15,17 @@ class ItemRepositoryTest < Minitest::Test
     assert_equal 10, ir.items.count
   end
 
+  def test_it_does_not_error_on_bad_input
+    ir = ItemRepository.new("./bogus/file/path.csv")
+    assert_equal Hash.new, ir.items
+
+    ir = ItemRepository.new(true)
+    assert_equal Hash.new, ir.items
+
+    ir = ItemRepository.new(nil)
+    assert_equal Hash.new, ir.items
+  end
+
   def test_it_returns_an_item_from_repository
     ir = ItemRepository.new("./test/fixtures/items_sample.csv")
 

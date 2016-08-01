@@ -58,8 +58,8 @@ class TransactionRepositoryTest < Minitest::Test
   def test_it_finds_all_transactions_by_result
     tr = TransactionRepository.new("./test/fixtures/200transactions.csv")
 
-    assert_equal 38,  tr.find_all_by_result(:failed).count
-    assert_equal 162, tr.find_all_by_result(:success).count
-    assert_equal [],  tr.find_all_by_result(:test)
+    assert_equal 38,  tr.find_all_by_result("failed").count
+    assert_equal 162, tr.find_all_by_result("success").count
+    assert_equal [],  tr.find_all_by_result("test")
   end
 end

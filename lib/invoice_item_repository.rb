@@ -1,5 +1,5 @@
 require_relative '../lib/invoice_item'
-require './lib/file_extractor'
+require_relative '../lib/file_extractor'
 
 class InvoiceItemRepository
   attr_reader :invoice_items
@@ -41,5 +41,21 @@ class InvoiceItemRepository
     invoice_items.values.find_all do |invoice_item|
       invoice_item.invoice_id == invoice_id
     end
+  end
+
+  def find_all_invoice_items_by_invoice_id(invoice_id)
+    invoice_items.values.find_all do |invoice_item|
+      invoice_item.invoice_id == invoice_id
+    end
+  end
+
+  def find_all_item_ids_by_invoice_id(invoice_id)
+    find_all_invoice_items_by_invoice_id(invoice_id).map do |invoice|
+      invoice.item_id
+    end
+  end
+
+  def inspect
+    # "#<#{self.class} #{@merchants.size} rows>"
   end
 end
