@@ -74,6 +74,14 @@ class SalesEngine
       merchants.find_by_id(merchant_id)
     end
   end
+
+  def is_invoice_paid_in_full?(invoice_id)
+    transactions.is_paid_in_full?(invoice_id)
+  end
+
+  def calculate_invoice_total(invoice_id)
+    invoice_items.calculate_invoice_total(invoice_id)
+  end
 end
 
 # temp_item.rb

@@ -240,4 +240,47 @@ class SalesEngineTest < Minitest::Test
     assert_instance_of Merchant,  customer.merchants.first
     assert_equal merchant_names,  names_of_merchants
   end
+
+  def test_it_checks_if_the_invoice_is_paid_in_full
+    se = SalesEngine.from_csv({ :items         => "./data/items.csv",
+                                :merchants     => "./data/merchants.csv",
+                                :invoices      => "./data/invoices.csv",
+                                :invoice_items => "./data/invoice_items.csv",
+                                :transactions  => "./data/transactions.csv",
+                                :customers     => "./data/customers.csv" })
+
+    invoice = se.invoices.find_by_id(46)
+    assert invoice.is_paid_in_full?
+
+    invoice = se.invoices.find_by_id(200)
+    assert invoice.is_paid_in_full?
+
+    invoice = se.invoices.find_by_id(21)
+    refute invoice.is_paid_in_full?
+
+    invoice = se.invoices.find_by_id(204)
+    refute invoice.is_paid_in_full?
+  end
+
+  def test_it_returns_total_amount_of_an_invoice
+    se = SalesEngine.from_csv({ :items         => "./data/items.csv",
+                                :merchants     => "./data/merchants.csv",
+                                :invoices      => "./data/invoices.csv",
+                                :invoice_items => "./data/invoice_items.csv",
+                                :transactions  => "./data/transactions.csv",
+                                :customers     => "./data/customers.csv" })
+
+    invoice = se.invoices.find_by_id(81)
+    assert_equal 5355.66, invoice.total
+
+    invoice = se.invoices.find_by_id(1)
+    assert_equal 21067.77, invoice.total
+
+    invoice = se.invoices.find_by_id(75)
+    assert_equal 17782.28, invoice.total
+  end
+
+# invoice.total returns the total $ amount of the invoice
+# Note: Failed charges should never be counted in revenue totals or statistics.
+
 end

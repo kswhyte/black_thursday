@@ -9,7 +9,7 @@ class SalesAnalystTest < Minitest::Test
                                 :invoices      => "./data/invoices.csv",
                                 :invoice_items => "./data/invoice_items.csv",
                                 :transactions  => "./data/transactions.csv",
-                                :customers     => "./data/customers.csv"  })                                          
+                                :customers     => "./data/customers.csv"  })
     SalesAnalyst.new(se)
   end
 
@@ -151,4 +151,5 @@ class SalesAnalystTest < Minitest::Test
     assert_equal 56.95, sa.invoice_status(:shipped) # => 93.75
     assert_equal 13.50, sa.invoice_status(:returned) # => 1.00
   end
+
 end

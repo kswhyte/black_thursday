@@ -89,6 +89,14 @@ class InvoiceRepository
     end
   end
 
+  def is_invoice_paid_in_full?(invoice_id)
+    @sales_engine_parent.is_invoice_paid_in_full?(invoice_id)
+  end
+
+  def calculate_invoice_total(invoice_id)
+    @sales_engine_parent.calculate_invoice_total(invoice_id)
+  end
+
   def inspect
     # "#<#{self.class} #{@merchants.size} rows>"
   end

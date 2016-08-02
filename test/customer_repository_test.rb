@@ -51,9 +51,9 @@ class CustomerRepositoryTest < Minitest::Test
   def test_it_finds_all_customers_by_customer_first_name
     cr = CustomerRepository.new("./data/customers.csv")
 
-    assert_instance_of Customer, cr.find_all_by_first_name("Marvin").first
+    assert_instance_of Customer, cr.find_all_by_first_name("Marv").first
     assert_instance_of Customer, cr.find_all_by_first_name("Duncan").first
-    assert_instance_of Customer, cr.find_all_by_first_name("Zander").first
+    assert_instance_of Customer, cr.find_all_by_first_name("Za").first
     assert_equal [],             cr.find_all_by_first_name("Kinan")
   end
 
@@ -61,8 +61,8 @@ class CustomerRepositoryTest < Minitest::Test
     cr = CustomerRepository.new("./data/customers.csv")
 
     assert_instance_of Customer, cr.find_all_by_last_name("Pfannerstill").first
-    assert_instance_of Customer, cr.find_all_by_last_name("Aufderhar").first
-    assert_instance_of Customer, cr.find_all_by_last_name("Turcotte").first
+    assert_instance_of Customer, cr.find_all_by_last_name("derhar").first
+    assert_instance_of Customer, cr.find_all_by_last_name("Turc").first
     assert_equal [],             cr.find_all_by_last_name("Calaway")
   end
 end
