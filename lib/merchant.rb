@@ -15,10 +15,8 @@ class Merchant
   def invoices
     @merchant_repository_parent.find_invoices_by_merchant_id(id)
   end
+
+  def customers
+    @merchant_repository_parent.find_customers_by_merchant_id(id)
+  end
 end
-
-#fixtures directory of sample data
-#no need for setup in tests
-#parser class
-
-#downcase here

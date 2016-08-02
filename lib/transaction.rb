@@ -13,14 +13,14 @@ class Transaction
     @transaction_repository_parent = transaction_repository_parent
     @id                            = transaction[:id].to_i
     @invoice_id                    = transaction[:invoice_id].to_i
-    @credit_card_number            = transaction[:credit_card_number]
+    @credit_card_number            = transaction[:credit_card_number].to_i
     @credit_card_expiration_date   = transaction[:credit_card_expiration_date]
-    @result                        = transaction[:result].to_sym
+    @result                        = transaction[:result]
     @created_at                    = Time.parse(transaction[:created_at])
     @updated_at                    = Time.parse(transaction[:updated_at])
   end
 
-  def unit_price_to_dollars
-    unit_price.to_f
+  def invoice
+    @transaction_repository_parent.find_invoice_by_transaction_id(invoice_id)
   end
 end

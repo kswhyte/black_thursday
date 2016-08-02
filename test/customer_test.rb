@@ -41,8 +41,8 @@ class CustomerTest < Minitest::Test
   def test_it_has_a_last_name
     customer = customer_test_setup
 
-    assert_equal "Osinski", customer[0].last_name
-    assert_equal "Wisozk",  customer[1].last_name
+    assert_equal "Osinski",    customer[0].last_name
+    assert_equal "Wisozk",     customer[1].last_name
     assert_equal "Cummerata",  customer[2].last_name
   end
 

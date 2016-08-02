@@ -55,11 +55,24 @@ class TransactionRepositoryTest < Minitest::Test
     assert_equal [], tr.find_all_by_invoice_id(8675309)
   end
 
+  def test_it_finds_all_transactions_by_credit_card_number
+    tr = TransactionRepository.new("./test/fixtures/200transactions.csv")
+
+    transactions = tr.find_all_by_credit_card_number(4279380734327937)
+    assert_instance_of Transaction,  transactions.first
+
+    transactions = tr.find_all_by_credit_card_number(4130676021415743)
+    assert_instance_of Transaction,  transactions.first
+
+    transactions = tr.find_all_by_credit_card_number(457171574036662)
+    assert_equal [], transactions
+  end
+
   def test_it_finds_all_transactions_by_result
     tr = TransactionRepository.new("./test/fixtures/200transactions.csv")
 
-    assert_equal 38,  tr.find_all_by_result(:failed).count
-    assert_equal 162, tr.find_all_by_result(:success).count
-    assert_equal [],  tr.find_all_by_result(:test)
+    assert_equal 38,  tr.find_all_by_result("failed").count
+    assert_equal 162, tr.find_all_by_result("success").count
+    assert_equal [],  tr.find_all_by_result("test")
   end
 end

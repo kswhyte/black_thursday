@@ -10,6 +10,7 @@ class TransactionTest < Minitest::Test
                         :result             => "failed",
                         :created_at         => "2012-02-26 20:57:22 UTC",
                         :updated_at         => "2012-02-26 20:57:22 UTC" }),
+
       Transaction.new({ :id                 => "1111",
                         :invoice_id         => "1288",
                         :credit_card_number => "4252071231731132",
@@ -17,6 +18,7 @@ class TransactionTest < Minitest::Test
                         :result             => "success",
                         :created_at         => "2012-02-26 20:57:33 UTC",
                         :updated_at         => "2012-02-26 20:57:33 UTC" }),
+
       Transaction.new({ :id                 => "3333",
                         :invoice_id         => "1240",
                         :credit_card_number => "4571715740366627",
@@ -45,9 +47,9 @@ class TransactionTest < Minitest::Test
   def test_it_has_a_credit_card_number
     transaction = transaction_test_setup
 
-    assert_equal "4268019568298476", transaction[0].credit_card_number
-    assert_equal "4252071231731132", transaction[1].credit_card_number
-    assert_equal "4571715740366627", transaction[2].credit_card_number
+    assert_equal 4268019568298476, transaction[0].credit_card_number
+    assert_equal 4252071231731132, transaction[1].credit_card_number
+    assert_equal 4571715740366627, transaction[2].credit_card_number
   end
 
   def test_it_has_a_credit_card_expiration_date
@@ -61,9 +63,9 @@ class TransactionTest < Minitest::Test
   def test_it_has_a_credit_card_expiration_date
     transaction = transaction_test_setup
 
-    assert_equal :failed, transaction[0].result
-    assert_equal :success, transaction[1].result
-    assert_equal :success, transaction[2].result
+    assert_equal "failed",  transaction[0].result
+    assert_equal "success", transaction[1].result
+    assert_equal "success", transaction[2].result
   end
 
   def test_when_it_was_created
@@ -71,8 +73,10 @@ class TransactionTest < Minitest::Test
 
     time = Time.parse("2012-02-26 20:57:22 UTC")
     assert_equal time, transaction[0].created_at
+
     time = Time.parse("2012-02-26 20:57:33 UTC")
     assert_equal time, transaction[1].created_at
+
     time = Time.parse("2012-02-26 20:58:46 UTC")
     assert_equal time, transaction[2].created_at
   end
@@ -82,8 +86,10 @@ class TransactionTest < Minitest::Test
 
     time = Time.parse("2012-02-26 20:57:22 UTC")
     assert_equal time, transaction[0].updated_at
+
     time = Time.parse("2012-02-26 20:57:33 UTC")
     assert_equal time, transaction[1].updated_at
+
     time = Time.parse("2012-02-26 20:58:46 UTC")
     assert_equal time, transaction[2].updated_at
   end

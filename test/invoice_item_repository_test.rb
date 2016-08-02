@@ -14,6 +14,17 @@ class InvoiceItemRepositoryTest < Minitest::Test
     assert_equal 200, iir.invoice_items.count
   end
 
+  def test_it_does_not_error_on_bad_input
+    iir = InvoiceItemRepository.new("./bogus/file/path.csv")
+    assert_equal Hash.new, iir.invoice_items
+
+    iir = InvoiceItemRepository.new(true)
+    assert_equal Hash.new, iir.invoice_items
+
+    iir = InvoiceItemRepository.new(nil)
+    assert_equal Hash.new, iir.invoice_items
+  end
+
   def test_it_returns_an_invoice_item_from_repository
     iir = InvoiceItemRepository.new("./test/fixtures/200invitms.csv")
 

@@ -4,9 +4,12 @@ require './lib/sales_analyst'
 
 class SalesAnalystTest < Minitest::Test
   def sales_analyst_test_setup
-    se = SalesEngine.from_csv({ :items     => "./data/items.csv",
-                                :merchants => "./data/merchants.csv",
-                                :invoices  => "./data/invoices.csv" })
+    se = SalesEngine.from_csv({ :items         => "./data/items.csv",
+                                :merchants     => "./data/merchants.csv",
+                                :invoices      => "./data/invoices.csv",
+                                :invoice_items => "./data/invoice_items.csv",
+                                :transactions  => "./data/transactions.csv",
+                                :customers     => "./data/customers.csv"  })
     SalesAnalyst.new(se)
   end
 
@@ -101,14 +104,14 @@ class SalesAnalystTest < Minitest::Test
     assert_equal 3.29, sa.average_invoices_per_merchant_standard_deviation
   end
 
-  def test_it_calculates_top_performing_merchants
+  def test_it_calculates_top_performing_merchants_by_invoices
     sa = sales_analyst_test_setup
 
     assert_equal 12,              sa.top_merchants_by_invoice_count.count
     assert_instance_of Merchant,  sa.top_merchants_by_invoice_count.first
   end
 
-  def test_it_calculates_bottom_performing_merchants
+  def test_it_calculates_bottom_performing_merchants_by_invoices
     sa = sales_analyst_test_setup
 
     assert_equal 4,               sa.bottom_merchants_by_invoice_count.count
@@ -148,4 +151,30 @@ class SalesAnalystTest < Minitest::Test
     assert_equal 56.95, sa.invoice_status(:shipped) # => 93.75
     assert_equal 13.50, sa.invoice_status(:returned) # => 1.00
   end
+
+  def test_it_calculates_total_revenue_for_a_given_day
+    sa = sales_analyst_test_setup
+
+    assert_equal 21067.77, sa.total_revenue_by_date(Time.parse("2009-02-07"))
+    assert_equal 33710.86,  sa.total_revenue_by_date(Time.parse("2000-04-09"))
+  end
 end
+
+def test_it_finds_the_top_performing_merchants_by_revenue
+  sa = sales_analyst_test_setup
+
+  assert_instance_of Merchant, sa.top_revenue_earners(x) #=> [merchant, merchan]
+
+end
+
+#
+# Find the top x performing merchants in terms of revenue:
+# sa = SalesAnalyst.new
+#
+# sa.top_revenue_earners(x) #=> [merchant, merchant, merchant, merchant, merchant]
+
+
+# If no number is given for top_revenue_earners, it takes the top 20 merchants by default:
+# sa = SalesAnalyst.new
+#
+# sa.top_revenue_earners #=> [merchant * 20]

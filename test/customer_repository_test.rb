@@ -15,6 +15,17 @@ class CustomerRepositoryTest < Minitest::Test
     assert_equal 1000, cr.customers.count
   end
 
+  def test_it_does_not_error_on_bad_input
+    cr = CustomerRepository.new("./bogus/file/path.csv")
+    assert_equal Hash.new, cr.customers
+
+    cr = CustomerRepository.new(true)
+    assert_equal Hash.new, cr.customers
+
+    cr = CustomerRepository.new(nil)
+    assert_equal Hash.new, cr.customers
+  end
+
   def test_it_returns_a_customer_from_repository
     cr = CustomerRepository.new("./data/customers.csv")
 
@@ -40,9 +51,9 @@ class CustomerRepositoryTest < Minitest::Test
   def test_it_finds_all_customers_by_customer_first_name
     cr = CustomerRepository.new("./data/customers.csv")
 
-    assert_instance_of Customer, cr.find_all_by_first_name("Marvin").first
+    assert_instance_of Customer, cr.find_all_by_first_name("Marv").first
     assert_instance_of Customer, cr.find_all_by_first_name("Duncan").first
-    assert_instance_of Customer, cr.find_all_by_first_name("Zander").first
+    assert_instance_of Customer, cr.find_all_by_first_name("Za").first
     assert_equal [],             cr.find_all_by_first_name("Kinan")
   end
 
@@ -50,8 +61,8 @@ class CustomerRepositoryTest < Minitest::Test
     cr = CustomerRepository.new("./data/customers.csv")
 
     assert_instance_of Customer, cr.find_all_by_last_name("Pfannerstill").first
-    assert_instance_of Customer, cr.find_all_by_last_name("Aufderhar").first
-    assert_instance_of Customer, cr.find_all_by_last_name("Turcotte").first
+    assert_instance_of Customer, cr.find_all_by_last_name("derhar").first
+    assert_instance_of Customer, cr.find_all_by_last_name("Turc").first
     assert_equal [],             cr.find_all_by_last_name("Calaway")
   end
 end

@@ -1,5 +1,5 @@
 require_relative '../lib/transaction'
-require './lib/file_extractor'
+require_relative '../lib/file_extractor'
 
 class TransactionRepository
   attr_reader :transactions
@@ -37,9 +37,36 @@ class TransactionRepository
     end
   end
 
+  def find_all_by_credit_card_number(credit_card_number)
+    transactions.values.find_all do |transaction|
+      transaction.credit_card_number == credit_card_number
+    end
+  end
+
   def find_all_by_result(result)
     transactions.values.find_all do |transaction|
       transaction.result == result
     end
+  end
+
+  def find_invoice_by_transaction_id(invoice_id)
+    @sales_engine_parent.find_invoice_by_transaction_id(invoice_id)
+  end
+
+  def find_all_transactions_by_invoice_id(invoice_id)
+    transactions.values.find_all do |transaction|
+      transaction.invoice_id == invoice_id
+    end
+  end
+
+  def is_paid_in_full?(invoice_id)
+    transactions = find_all_transactions_by_invoice_id(invoice_id)
+    transactions.any? do |transaction|
+      transaction.result == "success"
+    end
+  end
+
+  def inspect
+    # "#<#{self.class} #{@merchants.size} rows>"
   end
 end

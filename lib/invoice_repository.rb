@@ -53,6 +53,50 @@ class InvoiceRepository
     @sales_engine_parent.find_merchant_by_invoice_id(merchant_id)
   end
 
+  def find_items_by_invoice_id(invoice_id)
+    @sales_engine_parent.find_items_by_invoice_id(invoice_id)
+  end
+
+  def find_transactions_by_invoice_id(invoice_id)
+    @sales_engine_parent.find_transactions_by_invoice_id(invoice_id)
+  end
+
+  def find_customer_by_invoice_id(customer_id)
+    @sales_engine_parent.find_customer_by_invoice_id(customer_id)
+  end
+
+  def find_all_invoices_by_merchant_id(merchant_id)
+    invoices.values.find_all do |invoice|
+      invoice.merchant_id == merchant_id
+    end
+  end
+
+  def find_all_customer_ids_by_merchant_id(merchant_id)
+    find_all_invoices_by_merchant_id(merchant_id).map do |invoice|
+      invoice.customer_id
+    end
+  end
+
+  def find_all_invoices_by_customer_id(customer_id)
+    invoices.values.find_all do |invoice|
+      invoice.customer_id == customer_id
+    end
+  end
+
+  def find_all_merchant_ids_by_customer_id(customer_id)
+    find_all_invoices_by_customer_id(customer_id).map do |invoice|
+      invoice.merchant_id
+    end
+  end
+
+  def is_invoice_paid_in_full?(invoice_id)
+    @sales_engine_parent.is_invoice_paid_in_full?(invoice_id)
+  end
+
+  def calculate_invoice_total(invoice_id)
+    @sales_engine_parent.calculate_invoice_total(invoice_id)
+  end
+
   def inspect
     # "#<#{self.class} #{@merchants.size} rows>"
   end

@@ -2,10 +2,13 @@ class SalesAnalyst
   attr_reader :sales_engine
 
   def initialize(sales_engine)
-    @sales_engine = sales_engine
-    @all_merchants = @sales_engine.merchants.merchants
-    @all_items = @sales_engine.items.items
-    @all_invoices = @sales_engine.invoices.invoices
+    @sales_engine      = sales_engine
+    @all_merchants     = @sales_engine.merchants.merchants
+    @all_items         = @sales_engine.items.items
+    @all_invoices      = @sales_engine.invoices.invoices
+    @all_invoice_items = @sales_engine.invoice_items.invoice_items
+    @all_transactions  = @sales_engine.transactions.transactions
+    @all_customers     = @sales_engine.customers.customers
   end
 
   def average_items_per_merchant
@@ -139,4 +142,40 @@ class SalesAnalyst
   def invoice_status(status)
     ( 100 * invoices_by_status[status] / @all_invoices.count.to_f ).round(2)
   end
+
+  def matches_date_and_paid_in_full?(date, invoice)
+    invoice.created_at.strftime("%F") == date.strftime("%F") &&
+    @sales_engine.transactions.is_paid_in_full?(invoice.id)
+  end
+
+  def find_invoice_ids_by_date(date)
+    @all_invoices.values.each_with_object([]) do |invoice, invoice_ids|
+      if matches_date_and_paid_in_full?(date, invoice)
+        invoice_ids << invoice.id
+      end
+    end
+  end
+
+  def total_revenue_by_date(date)
+    invoice_ids = find_invoice_ids_by_date(date)
+    @all_invoice_items.values.inject(0) do |sum, invoice_item|
+      if invoice_ids.include?(invoice_item.invoice_id)
+        sum += invoice_item.unit_price * invoice_item.quantity
+      end
+      sum
+    end.round(2)
+  end
+
+  def find_merchant_revenue(merchant_id)
+    @all_merchants.values.find_all do |merchant|
+      sales_engine.invoices.find_all_by_merchant_id(merchant.id)
+    end
+  end
+
+
+  def top_revenue_earners(x)
+
+  end
+
+
 end

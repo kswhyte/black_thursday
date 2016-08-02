@@ -19,4 +19,24 @@ class Invoice
   def merchant
     @invoice_repository_parent.find_merchant_by_invoice_id(merchant_id)
   end
+
+  def items
+    @invoice_repository_parent.find_items_by_invoice_id(id)
+  end
+
+  def transactions
+    @invoice_repository_parent.find_transactions_by_invoice_id(id)
+  end
+
+  def customer
+    @invoice_repository_parent.find_customer_by_invoice_id(customer_id)
+  end
+
+  def is_paid_in_full?
+    @invoice_repository_parent.is_invoice_paid_in_full?(id)
+  end
+
+  def total
+    @invoice_repository_parent.calculate_invoice_total(id)
+  end
 end

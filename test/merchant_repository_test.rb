@@ -15,6 +15,17 @@ class MerchantRepositoryTest < Minitest::Test
     assert_equal 10, mr.merchants.count
   end
 
+  def test_it_does_not_error_on_bad_input
+    mr = MerchantRepository.new("./bogus/file/path.csv")
+    assert_equal Hash.new, mr.merchants
+
+    mr = MerchantRepository.new(true)
+    assert_equal Hash.new, mr.merchants
+
+    mr = MerchantRepository.new(nil)
+    assert_equal Hash.new, mr.merchants
+  end
+
   def test_it_returns_a_merchant_from_repository
     mr = MerchantRepository.new("./test/fixtures/merchants_sample.csv")
 
