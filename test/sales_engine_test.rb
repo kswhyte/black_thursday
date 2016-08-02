@@ -279,8 +279,4 @@ class SalesEngineTest < Minitest::Test
     invoice = se.invoices.find_by_id(75)
     assert_equal 17782.28, invoice.total
   end
-
-# invoice.total returns the total $ amount of the invoice
-# Note: Failed charges should never be counted in revenue totals or statistics.
-
 end
