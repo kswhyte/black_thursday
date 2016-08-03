@@ -39,7 +39,7 @@ class SalesAnalyst
 
   def merchants_with_high_item_count
     cov = coefficient_of_variation(average_items_per_merchant,
-      average_items_per_merchant_standard_deviation, 1)
+    average_items_per_merchant_standard_deviation, 1)
     @all_merchants.values.find_all do |merchant|
       sales_engine.items.find_all_by_merchant_id(merchant.id).count > cov
     end
@@ -75,7 +75,7 @@ class SalesAnalyst
 
   def golden_items
     cov = coefficient_of_variation(average_item_price,
-      item_price_standard_deviation, 2)
+    item_price_standard_deviation, 2)
     @all_items.values.find_all do |item|
       item.unit_price > cov
     end
@@ -97,7 +97,7 @@ class SalesAnalyst
 
   def top_merchants_by_invoice_count
     cov = coefficient_of_variation(average_invoices_per_merchant,
-      average_invoices_per_merchant_standard_deviation, 2)
+    average_invoices_per_merchant_standard_deviation, 2)
     @all_merchants.values.find_all do |merchant|
       sales_engine.invoices.find_all_by_merchant_id(merchant.id).count > cov
     end
@@ -105,7 +105,7 @@ class SalesAnalyst
 
   def bottom_merchants_by_invoice_count
     cov = coefficient_of_variation(average_invoices_per_merchant,
-      average_invoices_per_merchant_standard_deviation, -2)
+    average_invoices_per_merchant_standard_deviation, -2)
     @all_merchants.values.find_all do |merchant|
       sales_engine.invoices.find_all_by_merchant_id(merchant.id).count < cov
     end
@@ -127,7 +127,7 @@ class SalesAnalyst
 
   def top_days_by_invoice_count
     cov = coefficient_of_variation(average_invoices_per_day,
-      invoices_per_day_standard_deviation, 1)
+    invoices_per_day_standard_deviation, 1)
     invoices_per_day.select do |day, quantity|
       quantity > cov
     end.keys
@@ -166,16 +166,56 @@ class SalesAnalyst
     end.round(2)
   end
 
-  def find_merchant_revenue(merchant_id)
-    @all_merchants.values.find_all do |merchant|
-      sales_engine.invoices.find_all_by_merchant_id(merchant.id)
+  def revenue_by_merchant(merchant_id)
+    invoices = sales_engine.invoices.find_all_by_merchant_id(merchant_id)
+    invoices.inject(0) do |sum, invoice|
+      sum += revenue_by_invoice_id(invoice.id)
     end
   end
 
-
-  def top_revenue_earners(x)
-
+  def revenue_by_invoice_id(invoice_id)
+    if @sales_engine.transactions.is_paid_in_full?(invoice_id)
+      @all_invoice_items.values.inject(0) do |sum, invoice_item|
+        sum += invoice_item.unit_price * invoice_item.quantity
+      end
+    else
+      0
+    end.round(2)
   end
 
+  def top_revenue_earners(x = 20)
+    f = @all_merchants.values.sort_by do |merchant|
+      revenue_by_merchant(merchant.id)
+    end.reverse.take(x)
+    require "pry"; binding.pry
+  end
+
+  def find_pending_invoices
+    @all_invoices.values.delete_if do |invoice|
+      sales_engine.transactions.is_paid_in_full?(invoice.id)
+    end
+  end
+
+  def merchants_with_pending_invoices
+    find_pending_invoices.map do |invoice|
+      sales_engine.merchants.find_by_id(invoice.merchant_id)
+    end.uniq
+  end
+
+  def find_items_by_merchant(merchant_id)
+    @all_items.values.count do |item|
+      item.merchant_id == merchant_id
+    end
+  end
+
+  def merchants_with_only_one_item
+    @all_merchants.values.keep_if do |merchant|
+      find_items_by_merchant(merchant.id) == 1
+    end
+  end
+
+  # def merchants_with_only_one_item_registered_in_month(month_name)
+  #
+  # end
 
 end

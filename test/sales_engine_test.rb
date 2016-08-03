@@ -158,23 +158,6 @@ class SalesEngineTest < Minitest::Test
     assert_equal [2, 1370],         transaction_ids
   end
 
-  def test_it_returns_items_based_on_invoice_id
-    se = SalesEngine.from_csv({ :items         => "./data/items.csv",
-                                :merchants     => "./data/merchants.csv",
-                                :invoices      => "./data/invoices.csv",
-                                :invoice_items => "./data/invoice_items.csv",
-                                :transactions  => "./data/transactions.csv",
-                                :customers     => "./data/customers.csv" })
-
-    invoice = se.invoices.find_by_id(81)
-    names_of_items = invoice.items.map do |item|
-      item.name
-    end
-
-    assert_instance_of Item,                    invoice.items.first
-    assert_equal ["Wooden Shelf", "The Baron"], names_of_items
-  end
-
   def test_it_returns_a_customer_based_on_invoice_id
     se = SalesEngine.from_csv({ :items         => "./data/items.csv",
                                 :merchants     => "./data/merchants.csv",
