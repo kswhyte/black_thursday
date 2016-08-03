@@ -253,13 +253,13 @@ class SalesEngineTest < Minitest::Test
                                 :transactions  => "./data/transactions.csv",
                                 :customers     => "./data/customers.csv" })
 
-    invoice = se.invoices.find_by_id(81)
-    assert_equal 5355.66, invoice.total
+    invoice = se.invoices.find_by_id(47)
+    assert_equal 4586.05, invoice.total
 
     invoice = se.invoices.find_by_id(1)
     assert_equal 21067.77, invoice.total
 
     invoice = se.invoices.find_by_id(75)
-    assert_equal 17782.28, invoice.total
+    assert_equal 0, invoice.total
   end
 end

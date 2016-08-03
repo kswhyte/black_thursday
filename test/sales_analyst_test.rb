@@ -79,7 +79,6 @@ class SalesAnalystTest < Minitest::Test
 
     assert_equal 5,          sa.golden_items.count
     assert_instance_of Item, sa.golden_items.first
-    ##is there a more valid way to test this?
   end
 
   def test_it_calculates_average_invoices_per_merchant
@@ -147,9 +146,9 @@ class SalesAnalystTest < Minitest::Test
   def test_it_calculates_percentage_of_invoices_not_shipped
     sa = sales_analyst_test_setup
 
-    assert_equal 29.55, sa.invoice_status(:pending) # => 5.25
-    assert_equal 56.95, sa.invoice_status(:shipped) # => 93.75
-    assert_equal 13.50, sa.invoice_status(:returned) # => 1.00
+    assert_equal 29.55, sa.invoice_status(:pending)
+    assert_equal 56.95, sa.invoice_status(:shipped)
+    assert_equal 13.50, sa.invoice_status(:returned)
   end
 
   def test_it_calculates_total_revenue_for_a_given_day
@@ -162,7 +161,7 @@ class SalesAnalystTest < Minitest::Test
   def test_it_finds_the_top_performing_merchants_by_revenue
     sa = sales_analyst_test_setup
 
-    assert_instance_of Merchant, sa.top_revenue_earners(x) #=> [merchant, merchan]
+    assert_instance_of Merchant, sa.top_revenue_earners(x)
 
   end
 
@@ -182,9 +181,15 @@ class SalesAnalystTest < Minitest::Test
   def test_it_returns_a_list_of_top_revenue_earners
     sa = sales_analyst_test_setup
 
-    assert_equal 0, sa.top_revenue_earners(20)
+    assert_equal 0, sa.top_revenue_earners(50)
     # assert_respond_to(sa, :top_revenue_earners)
     #************************************
+  end
+
+  def test_it_returns_a_list_of_all_merchants_ranked_by_revenue
+    sa = sales_analyst_test_setup
+
+    assert_equal 0, sa.merchants_ranked_by_revenue.first.name
   end
 
   def test_it_finds_merchants_who_offer_only_one_item
@@ -195,42 +200,23 @@ class SalesAnalystTest < Minitest::Test
   end
 
   def test_it_finds_merchants_who_only_sell_one_item_by_month_they_registered
-    sales_analyst_test_setup
+    sa = sales_analyst_test_setup
 
-    assert_instance_of Merchant,
-    sa.merchants_with_only_one_item_registered_in_month("August").first
-    assert_equal 0,
-    sa.merchants_with_only_one_item_registered_in_month("August").count
-    #=> [merchant, merchant, merchant]
+    merchants = sa.merchants_with_only_one_item_registered_in_month("August")
+
+    assert_instance_of Merchant, merchants.first
+    assert_equal 19,             merchants.count
+  end
+
+  def test_it_finds_most_sold_items_for_a_merchant_in_terms_of_quantity_sold
+    sa = sales_analyst_test_setup
+
+    assert_equal 0, sa.most_sold_item_for_merchant(12334189) #=> [item] (in terms of quantity sold) or, if there is a tie, [item, item, item]
+  end
+
+  def test_it_finds_most_sold_items_for_a_merchant_in_terms_of_revenue
+    sa = sales_analyst_test_setup
+
+    assert_equal 0, sa.best_item_for_merchant(12334189)
   end
 end
-
-# def test_it_finds_most_sold_items_for_a_merchant_in_terms_of_quantity_sold
-#     sales_analyst_test_setup
-#   end
-# end
-
-# def test_it_finds_best_item_for_a_merchant_in_terms_of_revenue_generated
-#     sales_analyst_test_setup
-#   end
-# end
-
-
-# Find the top x performing merchants in terms of revenue:
-# sa.top_revenue_earners(x) #=> [merchant, merchant, merchant, merchant, merchant]
-
-
-# If no number is given for top_revenue_earners, it takes the top 20 merchants by default:
-# sa.top_revenue_earners #=> [merchant * 20]
-
-
-# Which merchants offer only one item:
-# sa.merchants_with_only_one_item #=> [merchant, merchant, merchant]
-
-
-# And merchants that only sell one item by the month they registered (merchant.created_at):
-# sa.merchants_with_only_one_item_registered_in_month("Month name") #=> [merchant, merchant, merchant]
-
-# which item sold most in terms of quantity and revenue:
-# sa.most_sold_item_for_merchant(merchant_id) #=> [item] (in terms of quantity sold) or, if there is a tie, [item, item, item]
-# sa.best_item_for_merchant(merchant_id) #=> item (in terms of revenue generated)

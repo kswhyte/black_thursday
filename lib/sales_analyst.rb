@@ -169,25 +169,28 @@ class SalesAnalyst
   def revenue_by_merchant(merchant_id)
     invoices = sales_engine.invoices.find_all_by_merchant_id(merchant_id)
     invoices.inject(0) do |sum, invoice|
-      sum += revenue_by_invoice_id(invoice.id)
+      sum += sales_engine.invoices.calculate_invoice_total(invoice.id)
     end
   end
 
-  def revenue_by_invoice_id(invoice_id)
-    if @sales_engine.transactions.is_paid_in_full?(invoice_id)
-      @all_invoice_items.values.inject(0) do |sum, invoice_item|
-        sum += invoice_item.unit_price * invoice_item.quantity
-      end
-    else
-      0
-    end.round(2)
+  # def revenue_by_invoice_id(invoice_id)
+  #   if @sales_engine.transactions.is_paid_in_full?(invoice_id)
+  #     @all_invoice_items.values.inject(0) do |sum, invoice_item|
+  #       sum += invoice_item.unit_price * invoice_item.quantity
+  #     end
+  #   else
+  #     0
+  #   end.round(2)
+  # end
+
+  def merchants_ranked_by_revenue
+    @all_merchants.values.sort_by do |merchant|
+      revenue_by_merchant(merchant.id)
+    end.reverse
   end
 
-  def top_revenue_earners(x = 20)
-    f = @all_merchants.values.sort_by do |merchant|
-      revenue_by_merchant(merchant.id)
-    end.reverse.take(x)
-    require "pry"; binding.pry
+  def top_revenue_earners(quantity = 20)
+    merchants_ranked_by_revenue.take(quantity.to_i)
   end
 
   def find_pending_invoices
@@ -208,14 +211,76 @@ class SalesAnalyst
     end
   end
 
-  def merchants_with_only_one_item
-    @all_merchants.values.keep_if do |merchant|
+  def merchants_with_only_one_item(merchants = @all_merchants.values)
+    merchants.keep_if do |merchant|
       find_items_by_merchant(merchant.id) == 1
     end
   end
 
-  # def merchants_with_only_one_item_registered_in_month(month_name)
-  #
-  # end
+  def merchants_registered_in_a_month(month_name)
+    @all_merchants.values.keep_if do |merchant|
+      merchant.created_at.strftime("%B") == month_name
+    end
+  end
 
+  def merchants_with_only_one_item_registered_in_month(month_name)
+    merchants_with_only_one_item(merchants_registered_in_a_month(month_name))
+  end
+
+### flat_map
+  def find_paid_in_full_invoice_items_by_merchant_id(merchant_id)
+    invoices = sales_engine.invoices.find_all_paid_in_full_invoices_by_merchant_id(merchant_id)
+    invoices.inject([]) do |invoice_items, invoice|
+      invoice_items.concat(sales_engine.invoice_items.find_all_by_invoice_id(invoice.id))
+    end.uniq
+  end
+
+  def find_a_merchants_invoice_items_grouped_by_item(merchant_id)
+    invoice_items = find_paid_in_full_invoice_items_by_merchant_id(merchant_id)
+    invoice_items.group_by do |invoice_item|
+      invoice_item.item_id
+    end
+  end
+
+  def find_a_merchants_quantity_sold_by_item(merchant_id)
+    items = find_a_merchants_invoice_items_grouped_by_item(merchant_id)
+    item_quantities = {}
+    items.each do |item, invoice_items|
+      item_quantities[item] = invoice_items.inject(0) do |sum, invoice_item|
+        sum += invoice_item.quantity
+      end
+    end
+    item_quantities
+  end
+
+  def find_a_merchants_revenue_by_item(merchant_id)
+    items = find_a_merchants_invoice_items_grouped_by_item(merchant_id)
+    item_quantities = {}
+    items.each do |item, invoice_items|
+      item_quantities[item] = invoice_items.inject(0) do |sum, invoice_item|
+        sum += invoice_item.quantity * invoice_item.unit_price
+      end
+    end
+    item_quantities
+  end
+
+  def most_sold_item_for_merchant(merchant_id)
+    item_totals = find_a_merchants_quantity_sold_by_item(merchant_id)
+    max_quantity = item_totals.values.max
+    top_item_ids = item_totals.find_all do |item, quantity|
+      quantity == max_quantity
+    end
+    top_item_ids.map do |item_id|
+      sales_engine.items.find_by_id(item_id[0])
+    end
+  end
+
+  def best_item_for_merchant(merchant_id)
+    item_revenues = find_a_merchants_revenue_by_item(merchant_id)
+    max_revenue = item_revenues.values.max
+    top_item_ids = item_revenues.max_by do |item, quantity|
+      quantity
+    end
+    sales_engine.items.find_by_id(top_item_ids[0])
+  end
 end

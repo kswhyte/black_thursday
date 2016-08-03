@@ -71,6 +71,12 @@ class InvoiceRepository
     end
   end
 
+  def find_all_paid_in_full_invoices_by_merchant_id(merchant_id)
+    find_all_invoices_by_merchant_id(merchant_id).find_all do |invoice|
+      is_invoice_paid_in_full?(invoice.id)
+    end
+  end
+
   def find_all_customer_ids_by_merchant_id(merchant_id)
     find_all_invoices_by_merchant_id(merchant_id).map do |invoice|
       invoice.customer_id
@@ -94,7 +100,11 @@ class InvoiceRepository
   end
 
   def calculate_invoice_total(invoice_id)
-    @sales_engine_parent.calculate_invoice_total(invoice_id)
+    if is_invoice_paid_in_full?(invoice_id)
+      @sales_engine_parent.calculate_invoice_total(invoice_id)
+    else
+      0
+    end.round(2)
   end
 
   def inspect

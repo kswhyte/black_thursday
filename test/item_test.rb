@@ -68,22 +68,6 @@ class ItemTest < Minitest::Test
 
   end
 
-  def test_it_finds_when_an_item_was_created
-    item = item_test_setup
-
-    assert_equal Time.parse("2016-01-11 11:51:37 UTC"), item[0].created_at
-    assert_equal Time.parse("2016-01-11 10:06:10 UTC"), item[1].created_at
-    assert_equal Time.parse("2016-01-11 11:30:35 UTC"), item[2].created_at
-  end
-
-  def test_it_finds_when_an_item_was_updated
-    item = item_test_setup
-
-    assert_equal Time.parse("1993-09-29 11:56:40 UTC"), item[0].updated_at
-    assert_equal Time.parse("1995-03-08 17:49:21 UTC"), item[1].updated_at
-    assert_equal Time.parse("2007-07-24 05:54:52 UTC"), item[2].updated_at
-  end
-
   def test_it_finds_an_item_related_merchant_id
     item = item_test_setup
 
