@@ -170,5 +170,4 @@ Below is a list of functions that are available to run within Black Thursday aft
 
 ***
 ## Authors
-Calaway
-Kinan Whyte
+Calaway & Kinan Whyte
