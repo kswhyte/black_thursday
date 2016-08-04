@@ -1,5 +1,5 @@
 # Black Thursday
-*Kinan Whyte and Christopher Calaway*
+*Kinan Whyte and Calaway*
 ***
 ## Description
 **Black Thursday** consists of a Data Access Layer containing databases loaded from CSV files, an Integration Layer creating dynamic relationships between the data sets, and a Business Intelligence Layer analyzing different aspects of the data and sales analytics.
