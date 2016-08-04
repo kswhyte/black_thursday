@@ -167,7 +167,6 @@ Below is a list of functions that are available to run within Black Thursday aft
 * most_sold_item_for_merchant
 * best_item_for_merchant
 
-
 ***
 ## Authors
 Calaway & Kinan Whyte
