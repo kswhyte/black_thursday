@@ -140,11 +140,7 @@ class SalesAnalyst
   end
 
   def most_sold_item_for_merchant(merchant_id)
-    item_totals = find_a_merchants_quantity_sold_by_item(merchant_id)
-    max_quantity = item_totals.values.max
-    top_item_ids = item_totals.find_all do |item, quantity|
-      quantity == max_quantity
-    end
+    top_item_ids = top_item_ids_for_merchant_by_quantity(merchant_id)
     top_item_ids.map do |item_id|
       sales_engine.items.find_by_id(item_id[0])
     end
@@ -154,7 +150,7 @@ class SalesAnalyst
     item_revenues = find_a_merchants_revenue_by_item(merchant_id)
     top_item_id = item_revenues.max_by do |item, quantity|
       quantity
-    end.first
-    sales_engine.items.find_by_id(top_item_id)
+    end
+    sales_engine.items.find_by_id(top_item_id.first)
   end
 end

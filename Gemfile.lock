@@ -37,7 +37,7 @@ GEM
       parser (~> 2.3.1, >= 2.3.1.2)
       rainbow (~> 2.0)
     rouge (1.11.1)
-    rspec-core (3.5.1)
+    rspec-core (3.5.2)
       rspec-support (~> 3.5.0)
     rspec-support (3.5.0)
     simplecov (0.12.0)

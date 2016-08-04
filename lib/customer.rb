@@ -17,5 +17,4 @@ class Customer
   def merchants
     @customer_repository_parent.find_merchants_by_customer_id(id)
   end
-
 end

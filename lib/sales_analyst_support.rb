@@ -106,6 +106,14 @@ module SalesAnalystSupport
     item_quantities
   end
 
+  def top_item_ids_for_merchant_by_quantity(merchant_id)
+    item_totals = find_a_merchants_quantity_sold_by_item(merchant_id)
+    max_quantity = item_totals.values.max
+    top_item_ids = item_totals.find_all do |item, quantity|
+      quantity == max_quantity
+    end
+  end
+
   def sum_invoice_item_quantities(invoice_items)
     invoice_items.inject(0) do |sum, invoice_item|
       sum += invoice_item.quantity
@@ -121,9 +129,9 @@ module SalesAnalystSupport
     item_quantities
   end
 
-    def sum_invoice_item_prices(invoice_items)
-      invoice_items.inject(0) do |sum, invoice_item|
-        sum += invoice_item.quantity * invoice_item.unit_price
-      end
+  def sum_invoice_item_prices(invoice_items)
+    invoice_items.inject(0) do |sum, invoice_item|
+      sum += invoice_item.quantity * invoice_item.unit_price
     end
+  end
 end
