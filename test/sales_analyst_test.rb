@@ -43,9 +43,8 @@ class SalesAnalystTest < Minitest::Test
   def test_it_calculates_which_merchants_sell_the_most_items
     sa = sales_analyst_test_setup
 
-    assert_equal 52, sa.merchants_with_high_item_count.count
+    assert_equal       52,       sa.merchants_with_high_item_count.count
     assert_instance_of Merchant, sa.merchants_with_high_item_count.first
-    ##is there a more valid way to test this?
   end
 
   def test_it_calculates_the_average_price_of_merchants_items
@@ -77,7 +76,7 @@ class SalesAnalystTest < Minitest::Test
   def test_it_calculates_golden_items
     sa = sales_analyst_test_setup
 
-    assert_equal 5,          sa.golden_items.count
+    assert_equal       5,    sa.golden_items.count
     assert_instance_of Item, sa.golden_items.first
   end
 
@@ -94,7 +93,8 @@ class SalesAnalystTest < Minitest::Test
       :invoices  => "./data/invoices.csv" })
     sa_sample = SalesAnalyst.new(se_sample)
 
-    assert_equal [10, 7, 12, 11, 10, 10, 13, 18, 10, 14], sa_sample.invoices_per_merchant
+    expected = [10, 7, 12, 11, 10, 10, 13, 18, 10, 14]
+    assert_equal expected, sa_sample.invoices_per_merchant
   end
 
   def test_it_calculates_average_invoices_per_merchant_standard_deviation
@@ -106,14 +106,14 @@ class SalesAnalystTest < Minitest::Test
   def test_it_calculates_top_performing_merchants_by_invoices
     sa = sales_analyst_test_setup
 
-    assert_equal 12,             sa.top_merchants_by_invoice_count.count
+    assert_equal       12,       sa.top_merchants_by_invoice_count.count
     assert_instance_of Merchant, sa.top_merchants_by_invoice_count.first
   end
 
   def test_it_calculates_bottom_performing_merchants_by_invoices
     sa = sales_analyst_test_setup
 
-    assert_equal 4,              sa.bottom_merchants_by_invoice_count.count
+    assert_equal       4,        sa.bottom_merchants_by_invoice_count.count
     assert_instance_of Merchant, sa.bottom_merchants_by_invoice_count.first
   end
 
@@ -158,45 +158,59 @@ class SalesAnalystTest < Minitest::Test
     assert_equal 33710.86,  sa.total_revenue_by_date(Time.parse("2000-04-09"))
   end
 
-  def test_it_finds_the_top_performing_merchants_by_revenue
-    sa = sales_analyst_test_setup
+  def test_it_finds_the_top_performing_merchants_by_revenue_with_default_20
+    se = SalesEngine.from_csv({
+      :items         => "./data/items.csv",
+      :merchants     => "./test/fixtures/50merchants.csv",
+      :invoices      => "./data/invoices.csv",
+      :invoice_items => "./data/invoice_items.csv",
+      :transactions  => "./data/transactions.csv",
+      :customers     => "./data/customers.csv" })
+    sa = SalesAnalyst.new(se)
 
-    assert_instance_of Merchant, sa.top_revenue_earners(x)
+    assert_instance_of Merchant, sa.top_revenue_earners.first
+    assert_equal       20,       sa.top_revenue_earners.count
+  end
 
+  def test_it_returns_a_list_of_all_merchants_ranked_by_revenue
+    se = SalesEngine.from_csv({
+      :items         => "./data/items.csv",
+      :merchants     => "./test/fixtures/50merchants.csv",
+      :invoices      => "./data/invoices.csv",
+      :invoice_items => "./data/invoice_items.csv",
+      :transactions  => "./data/transactions.csv",
+      :customers     => "./data/customers.csv" })
+    sa = SalesAnalyst.new(se)
+
+    assert_instance_of Merchant, sa.merchants_ranked_by_revenue.sample
+    assert_equal       50,       sa.merchants_ranked_by_revenue.count
   end
 
   def test_it_finds_merchants_with_pending_invoices
-    sa = sales_analyst_test_setup
+    se = SalesEngine.from_csv({
+      :items         => "./data/items.csv",
+      :merchants     => "./data/merchants.csv",
+      :invoices      => "./test/fixtures/invoices_sample.csv",
+      :invoice_items => "./data/invoice_items.csv",
+      :transactions  => "./data/transactions.csv",
+      :customers     => "./data/customers.csv" })
+    sa = SalesAnalyst.new(se)
 
     assert_instance_of Merchant, sa.merchants_with_pending_invoices.first
-    assert_equal 467,            sa.merchants_with_pending_invoices.count
+    assert_equal       19,       sa.merchants_with_pending_invoices.count
   end
 
   def test_it_calculates_total_revenue_for_a_merchant
     sa = sales_analyst_test_setup
 
-    assert_equal 300615087.75, sa.revenue_by_merchant(12334105)
-  end
-
-  def test_it_returns_a_list_of_top_revenue_earners
-    sa = sales_analyst_test_setup
-
-    assert_equal 0, sa.top_revenue_earners(50)
-    # assert_respond_to(sa, :top_revenue_earners)
-    #************************************
-  end
-
-  def test_it_returns_a_list_of_all_merchants_ranked_by_revenue
-    sa = sales_analyst_test_setup
-
-    assert_equal 0, sa.merchants_ranked_by_revenue.first.name
+    assert_equal 73777.17, sa.revenue_by_merchant(12334105)
   end
 
   def test_it_finds_merchants_who_offer_only_one_item
     sa = sales_analyst_test_setup
 
     assert_instance_of Merchant, sa.merchants_with_only_one_item.first
-    assert_equal 0, sa.merchants_with_only_one_item.count
+    assert_equal 1, sa.merchants_with_only_one_item.last.items.count
   end
 
   def test_it_finds_merchants_who_only_sell_one_item_by_month_they_registered
@@ -205,18 +219,20 @@ class SalesAnalystTest < Minitest::Test
     merchants = sa.merchants_with_only_one_item_registered_in_month("August")
 
     assert_instance_of Merchant, merchants.first
-    assert_equal 19,             merchants.count
+    assert_equal       19,       merchants.count
   end
 
   def test_it_finds_most_sold_items_for_a_merchant_in_terms_of_quantity_sold
     sa = sales_analyst_test_setup
 
-    assert_equal 0, sa.most_sold_item_for_merchant(12334189) #=> [item] (in terms of quantity sold) or, if there is a tie, [item, item, item]
+    expected = "Adult Princess Leia Hat"
+    assert_equal expected, sa.most_sold_item_for_merchant(12334189).first.name
+    assert_equal 1,        sa.most_sold_item_for_merchant(12334189).count
   end
 
-  def test_it_finds_most_sold_items_for_a_merchant_in_terms_of_revenue
+  def test_it_finds_most_sold_item_for_a_merchant_in_terms_of_revenue
     sa = sales_analyst_test_setup
 
-    assert_equal 0, sa.best_item_for_merchant(12334189)
+    assert_instance_of Item, sa.best_item_for_merchant(12334189)
   end
 end

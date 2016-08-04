@@ -8,19 +8,19 @@ class CustomerRepository
   def initialize(load_path, sales_engine_parent = nil)
     @sales_engine_parent = sales_engine_parent
     @customers = {}
-    if load_path.class == String && File.exist?(load_path)
-      customers_data = FileExtractor.extract_data(load_path)
-      populate(customers_data)
-    end
+    populate(load_path)
   end
 
   def make_customer(customer_data)
     @customers[customer_data[:id].to_i] = Customer.new(customer_data, self)
   end
 
-  def populate(customers_data)
-    customers_data.each do |customer_data|
-      make_customer(customer_data)
+  def populate(load_path)
+    if load_path.class == String && File.exist?(load_path)
+      customers_data = FileExtractor.extract_data(load_path)
+      customers_data.each do |customer_data|
+        make_customer(customer_data)
+      end
     end
   end
 

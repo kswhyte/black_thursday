@@ -4,8 +4,8 @@ require_relative '../lib/invoice_repository'
 require_relative '../lib/invoice_item_repository'
 require_relative '../lib/transaction_repository'
 require_relative '../lib/customer_repository'
-require_relative '../lib/sales_engine_relationships_layer.rb'
-require_relative '../lib/sales_engine_business_intelligence.rb'
+require_relative '../lib/sales_engine_relationships_layer'
+require_relative '../lib/sales_engine_business_intelligence'
 
 class SalesEngine
   include SalesEngineRelationshipsLayer

@@ -7,19 +7,20 @@ class InvoiceItemRepository
   def initialize(load_path, sales_engine_parent = nil)
     @sales_engine_parent = sales_engine_parent
     @invoice_items = {}
-    if load_path.class == String && File.exist?(load_path)
-      invoice_items_data = FileExtractor.extract_data(load_path)
-      populate(invoice_items_data)
-    end
+    populate(load_path)
   end
 
   def make_invoice_item(invoice_item_data)
-    invoice_items[invoice_item_data[:id].to_i] = InvoiceItem.new(invoice_item_data, self)
+    id = invoice_item_data[:id].to_i
+    invoice_items[id] = InvoiceItem.new(invoice_item_data, self)
   end
 
-  def populate(invoice_items_data)
-    invoice_items_data.each do |invoice_item_data|
-      make_invoice_item(invoice_item_data)
+  def populate(load_path)
+    if load_path.class == String && File.exist?(load_path)
+      invoice_items_data = FileExtractor.extract_data(load_path)
+      invoice_items_data.each do |invoice_item_data|
+        make_invoice_item(invoice_item_data)
+      end
     end
   end
 

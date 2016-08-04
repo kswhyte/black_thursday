@@ -7,19 +7,20 @@ class TransactionRepository
   def initialize(load_path, sales_engine_parent = nil)
     @sales_engine_parent = sales_engine_parent
     @transactions = {}
-    if load_path.class == String && File.exist?(load_path)
-      transactions_data = FileExtractor.extract_data(load_path)
-      populate(transactions_data)
-    end
+    populate(load_path)
   end
 
   def make_transaction(transaction_data)
-    transactions[transaction_data[:id].to_i] = Transaction.new(transaction_data, self)
+    id = transaction_data[:id].to_i
+    transactions[id] = Transaction.new(transaction_data, self)
   end
 
-  def populate(transactions_data)
-    transactions_data.each do |transaction_data|
-      make_transaction(transaction_data)
+  def populate(load_path)
+    if load_path.class == String && File.exist?(load_path)
+      transactions_data = FileExtractor.extract_data(load_path)
+      transactions_data.each do |transaction_data|
+        make_transaction(transaction_data)
+      end
     end
   end
 

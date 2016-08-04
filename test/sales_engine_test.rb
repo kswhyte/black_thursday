@@ -65,7 +65,8 @@ class SalesEngineTest < Minitest::Test
       item.name
     end
 
-    item_names = ["sautoir boheme chic perle de gemme  montee sur chainette argentée",
+    item_names =
+      ["sautoir boheme chic perle de gemme  montee sur chainette argentée",
       "sautoir ethique couleur naturel printemps été",
       "sautoir boheme chic  en perle et pierre"]
 

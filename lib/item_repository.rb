@@ -7,19 +7,19 @@ class ItemRepository
   def initialize(load_path, sales_engine_parent = nil)
     @sales_engine_parent = sales_engine_parent
     @items = {}
-    if load_path.class == String && File.exist?(load_path)
-      items_data = FileExtractor.extract_data(load_path)
-      populate(items_data)
-    end
+    populate(load_path)
   end
 
   def make_item(item_data)
     @items[item_data[:id].to_i] = Item.new(item_data, self)
   end
 
-  def populate(items_data)
-    items_data.each do |item_data|
-      make_item(item_data)
+  def populate(load_path)
+    if load_path.class == String && File.exist?(load_path)
+      items_data = FileExtractor.extract_data(load_path)
+      items_data.each do |item_data|
+        make_item(item_data)
+      end
     end
   end
 

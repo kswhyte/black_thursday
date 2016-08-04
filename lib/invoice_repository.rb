@@ -7,19 +7,19 @@ class InvoiceRepository
   def initialize(load_path, sales_engine_parent = nil)
     @sales_engine_parent = sales_engine_parent
     @invoices = {}
-    if load_path.class == String && File.exist?(load_path)
-      invoices_data = FileExtractor.extract_data(load_path)
-      populate(invoices_data)
-    end
+    populate(load_path)
   end
 
   def make_invoice(invoice_data)
     @invoices[invoice_data[:id].to_i] = Invoice.new(invoice_data, self)
   end
 
-  def populate(invoices_data)
-    invoices_data.each do |invoice_data|
-      make_invoice(invoice_data)
+  def populate(load_path)
+    if load_path.class == String && File.exist?(load_path)
+      invoices_data = FileExtractor.extract_data(load_path)
+      invoices_data.each do |invoice_data|
+        make_invoice(invoice_data)
+      end
     end
   end
 
@@ -71,7 +71,7 @@ class InvoiceRepository
     end
   end
 
-  def find_all_paid_in_full_invoices_by_merchant_id(merchant_id)
+  def find_paid_invoices_by_merchant_id(merchant_id)
     find_all_invoices_by_merchant_id(merchant_id).find_all do |invoice|
       is_invoice_paid_in_full?(invoice.id)
     end
